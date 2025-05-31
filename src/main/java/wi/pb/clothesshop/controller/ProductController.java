@@ -23,4 +23,20 @@ public class ProductController {
     {
         return productService.insertProduct(product);
     }
+
+    @GetMapping("/find/{id}")
+    public Product getProduct(@PathVariable int id) {
+        return productService.getProduct(id);
+    }
+
+    @PutMapping("/update/{id}")
+    public Product updateProduct(@PathVariable int id, @RequestBody Product product) {
+        return productService.updateProduct(id, product);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public Product deleteProduct(@PathVariable int id) {
+        return productService.deleteProduct(id);
+    }
+
 }

@@ -11,4 +11,10 @@ public interface ProductService {
     List<Product> getAllProducts();
 
     Product insertProduct(Product product);
+
+    Product getProduct(int id);
+
+    Product updateProduct(int id, Product product);
+
+    Product deleteProduct(int id);
 }
