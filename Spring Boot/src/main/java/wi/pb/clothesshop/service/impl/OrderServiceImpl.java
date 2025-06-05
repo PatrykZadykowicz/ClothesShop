@@ -9,6 +9,7 @@ import wi.pb.clothesshop.entity.Order;
 import wi.pb.clothesshop.entity.OrderItem;
 import wi.pb.clothesshop.entity.Product;
 import wi.pb.clothesshop.enums.OrderStatus;
+import wi.pb.clothesshop.service.CartService;
 import wi.pb.clothesshop.service.OrderService;
 
 import java.math.BigDecimal;
@@ -21,19 +22,18 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDao orderDao;
     private ProductDao productDao;
-    //private CartService cartService;
+    private CartService cartService;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, ProductDao productDao) {
+    public OrderServiceImpl(OrderDao orderDao, ProductDao productDao, CartService cartService) {
         this.orderDao = orderDao;
         this.productDao = productDao;
-        //this.cartService = cartService;
+        this.cartService = cartService;
     }
 
     @Override
     public Order placeOrder(Long userId) {
-        //Cart cart = cartService.getCartByUserId(userId);
-        Cart cart = new Cart();
+        Cart cart = cartService.getCartByUserId(userId);
         Order order = createOrder(cart);
 
         List<OrderItem> orderItemList = createOrderItems(order, cart);
@@ -41,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(calculateTotalAmount(orderItemList));
 
         orderDao.save(order);
-        //cartService.clearCart(cart.getId());
+        cartService.clearCart(cart.getId());
         return order;
     }
 
