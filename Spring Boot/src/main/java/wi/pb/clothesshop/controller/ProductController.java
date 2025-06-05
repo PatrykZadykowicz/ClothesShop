@@ -14,9 +14,12 @@ import java.util.List;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    @Autowired
-    @Qualifier("productServiceImpl")
     private ProductService productService;
+
+    @Autowired
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping("/all")
     public List<Product> getAllProducts()
@@ -27,22 +30,34 @@ public class ProductController {
     @PostMapping("/insert")
     public Product insertProduct(@RequestBody Product product)
     {
-        return productService.insertProduct(product);
+        try {
+            return productService.insertProduct(product);
+        }
+        catch (Exception e) { e.printStackTrace(); return null;}
     }
 
     @GetMapping("/find/{id}")
     public Product getProduct(@PathVariable int id) {
-        return productService.getProduct(id);
+        try {
+            return productService.getProduct(id);
+        }
+        catch (Exception e) { e.printStackTrace(); return null;}
     }
 
     @PutMapping("/update/{id}")
     public Product updateProduct(@PathVariable int id, @RequestBody Product product) {
-        return productService.updateProduct(id, product);
+        try {
+            return productService.updateProduct(id, product);
+        }
+        catch (Exception e) { e.printStackTrace(); return null; }
     }
 
     @DeleteMapping("/delete/{id}")
     public void deleteProduct(@PathVariable int id) {
-        productService.deleteProduct(id);
+        try {
+            productService.deleteProduct(id);
+        }
+        catch (Exception e) { e.printStackTrace(); }
     }
 
 }
