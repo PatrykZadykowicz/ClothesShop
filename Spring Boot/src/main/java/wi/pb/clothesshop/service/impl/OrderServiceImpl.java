@@ -36,8 +36,11 @@ public class OrderServiceImpl implements OrderService {
         Cart cart = cartService.getCartByUserId(userId);
         Order order = createOrder(cart);
 
+        // Creates a list of order items based on items in the cart
         List<OrderItem> orderItemList = createOrderItems(order, cart);
+        // Assigns order items to the order
         order.setOrderItems(new HashSet<>(orderItemList));
+        // Calculates cart's total cost
         order.setTotalAmount(calculateTotalAmount(orderItemList));
 
         orderDao.save(order);
@@ -45,6 +48,7 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    // Creates a new order assigned to a specific user. The order has no cart items assigned.
     private Order createOrder(Cart cart) {
         Order order = new Order();
         order.setUser(cart.getUser());
@@ -53,6 +57,8 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    // Extracts cart items form the cart and returns them as a list of order items.
+    // The returned order items are already assigned to a specific order.
     private List<OrderItem> createOrderItems(Order order, Cart cart) {
         return cart.getCartItems().stream().map(cartItem -> {
             Product product = cartItem.getProduct();

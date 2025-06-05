@@ -41,6 +41,7 @@ public class ProductServiceImplUsingDao implements ProductService {
         modifiedProduct.setName(product.getName());
         modifiedProduct.setPrice(product.getPrice());
         modifiedProduct.setCategory(product.getCategory());
+        modifiedProduct.setInventory(product.getInventory());
 
         return productDao.update(modifiedProduct);
     }

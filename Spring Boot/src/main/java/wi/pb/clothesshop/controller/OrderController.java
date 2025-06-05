@@ -21,7 +21,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/order")
+    @PostMapping("/create")
     public Order createOrder(@RequestParam Long userId) {
         try {
             return orderService.placeOrder(userId);
@@ -29,7 +29,7 @@ public class OrderController {
         catch (Exception e) { e.printStackTrace(); return null; }
     }
 
-    @GetMapping("/{orderId}/order")
+    @GetMapping("/{orderId}")
     public Order getOrderById(@PathVariable Long orderId) {
         Order order = null;
 
@@ -39,7 +39,7 @@ public class OrderController {
         return order;
     }
 
-    @GetMapping("/{userId}/orders")
+    @GetMapping("/{userId}/user-orders")
     public List<Order> getUserOrders(@PathVariable Long userId) {
         try {
             return orderService.getUserOrders(userId);
