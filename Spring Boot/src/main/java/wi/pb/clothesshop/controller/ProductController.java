@@ -1,13 +1,11 @@
 package wi.pb.clothesshop.controller;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import wi.pb.clothesshop.entity.Product;
 import wi.pb.clothesshop.service.ProductService;
-import wi.pb.clothesshop.service.impl.ProductServiceImplUsingDao;
 
 import java.util.List;
 
@@ -17,7 +15,7 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    @Qualifier("productServiceImplUsingDao")
+    @Qualifier("productServiceImpl")
     private ProductService productService;
 
     @GetMapping("/all")

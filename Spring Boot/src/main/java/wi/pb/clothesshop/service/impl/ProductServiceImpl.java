@@ -2,47 +2,53 @@ package wi.pb.clothesshop.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import wi.pb.clothesshop.dao.ProductDao;
 import wi.pb.clothesshop.entity.Product;
-import wi.pb.clothesshop.repository.ProductRepo;
 import wi.pb.clothesshop.service.ProductService;
 
 import java.util.List;
+
 @Service
 public class ProductServiceImpl implements ProductService {
+
+    private ProductDao productDao;
+
     @Autowired
-    private ProductRepo productRepo;
+    public ProductServiceImpl(ProductDao productDao) {
+        this.productDao = productDao;
+    }
 
     @Override
-    public List<Product> getAllProducts()
-    {
-        return productRepo.findAll();
+    public List<Product> getAllProducts() {
+        return productDao.getAll();
     }
 
     @Override
     public Product insertProduct(Product product) {
-        return productRepo.save(product);
+        return productDao.save(product);
     }
 
     @Override
     public Product getProduct(int id) {
-        return productRepo.findById(id).get();
+        return productDao.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
     @Override
     public Product updateProduct(int id, Product product) {
-        Product DBproduct = productRepo.findById(id).get();
+        Product modifiedProduct = productDao.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
 
-        DBproduct.setName(product.getName());
-        DBproduct.setPrice(product.getPrice());
-        DBproduct.setCategory(product.getCategory());
-        productRepo.save(DBproduct);
+        modifiedProduct.setName(product.getName());
+        modifiedProduct.setPrice(product.getPrice());
+        modifiedProduct.setCategory(product.getCategory());
+        modifiedProduct.setInventory(product.getInventory());
 
-        return DBproduct;
+        return productDao.update(modifiedProduct);
     }
 
     @Override
     public void deleteProduct(int id) {
-        Product product = productRepo.findById(id).get();
-        productRepo.deleteById(id);
+        Product product = productDao.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        productDao.delete(product);
     }
+
 }
