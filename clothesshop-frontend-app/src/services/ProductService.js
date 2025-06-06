@@ -8,6 +8,10 @@ class ProductService {
         return axios.get(BASE_API + "/all");
     }
 
+    insertProduct(product) {
+        return axios.post(BASE_API + "/insert",product);
+    }
+
 }
 
 export default new ProductService();
