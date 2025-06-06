@@ -9,6 +9,8 @@ class ListProducts extends Component {
         this.state = {
             products : []
         }
+
+        this.addProduct=this.addProduct.bind(this);
     }
 
     componentDidMount() {
@@ -17,11 +19,16 @@ class ListProducts extends Component {
             this.setState({products: response.data});
         });
     }
+    addProduct(){
+
+        this.props.history.push('/addProduct');
+    }
 
     render() {
         return (
         <div>
             <h1>List of products</h1>
+            <button className='btn btn-dark text-white' onClick={this.addProduct}>Add Product</button>
             <table class="table">
             <thead>
                 <tr>
