@@ -9,6 +9,7 @@ import wi.pb.clothesshop.entity.Order;
 import wi.pb.clothesshop.entity.OrderItem;
 import wi.pb.clothesshop.entity.Product;
 import wi.pb.clothesshop.enums.OrderStatus;
+import wi.pb.clothesshop.service.CartService;
 import wi.pb.clothesshop.service.OrderService;
 
 import java.math.BigDecimal;
@@ -21,30 +22,33 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDao orderDao;
     private ProductDao productDao;
-    //private CartService cartService;
+    private CartService cartService;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, ProductDao productDao) {
+    public OrderServiceImpl(OrderDao orderDao, ProductDao productDao, CartService cartService) {
         this.orderDao = orderDao;
         this.productDao = productDao;
-        //this.cartService = cartService;
+        this.cartService = cartService;
     }
 
     @Override
     public Order placeOrder(Long userId) {
-        //Cart cart = cartService.getCartByUserId(userId);
-        Cart cart = new Cart();
+        Cart cart = cartService.getCartByUserId(userId);
         Order order = createOrder(cart);
 
+        // Creates a list of order items based on items in the cart
         List<OrderItem> orderItemList = createOrderItems(order, cart);
+        // Assigns order items to the order
         order.setOrderItems(new HashSet<>(orderItemList));
+        // Calculates cart's total cost
         order.setTotalAmount(calculateTotalAmount(orderItemList));
 
         orderDao.save(order);
-        //cartService.clearCart(cart.getId());
+        cartService.clearCart(cart.getId());
         return order;
     }
 
+    // Creates a new order assigned to a specific user. The order has no cart items assigned.
     private Order createOrder(Cart cart) {
         Order order = new Order();
         order.setUser(cart.getUser());
@@ -53,6 +57,8 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    // Extracts cart items form the cart and returns them as a list of order items.
+    // The returned order items are already assigned to a specific order.
     private List<OrderItem> createOrderItems(Order order, Cart cart) {
         return cart.getCartItems().stream().map(cartItem -> {
             Product product = cartItem.getProduct();
