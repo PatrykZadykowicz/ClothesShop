@@ -37,10 +37,11 @@ public class ProductServiceImpl implements ProductService {
     public Product updateProduct(int id, Product product) {
         Product modifiedProduct = productDao.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
 
-        modifiedProduct.setName(product.getName());
-        modifiedProduct.setPrice(product.getPrice());
-        modifiedProduct.setCategory(product.getCategory());
-        modifiedProduct.setInventory(product.getInventory());
+        DBproduct.setName(product.getName());
+        DBproduct.setPrice(product.getPrice());
+        DBproduct.setCategory(product.getCategory());
+        DBproduct.setInventory(product.getInventory());
+        productRepo.save(DBproduct);
 
         return productDao.update(modifiedProduct);
     }
