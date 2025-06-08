@@ -24,6 +24,23 @@ class ListProducts extends Component {
         this.props.history.push('/addProduct');
     }
 
+    updateProduct(id){
+    this.props.history.push(`/updateProduct/${id}`);
+}
+
+
+    deleteProduct(id) {
+    const confirmDelete = window.confirm("Are you sure you want to delete this product?");
+    if (confirmDelete) {
+        ProductService.deleteProduct(id).then(res => {
+            this.setState({ products: this.state.products.filter(product => product.id !== id) });
+        }).catch(error => {
+            console.error("Delete failed:", error);
+        });
+    }
+}
+
+
     render() {
         return (
         <div>
@@ -46,6 +63,21 @@ class ListProducts extends Component {
                         <td>{product.category}</td>
                         <td>{product.name}</td>
                         <td>{product.price}</td>
+                        
+                         <td>
+                            <button
+                    className="btn btn-primary btn-sm me-2"
+                    onClick={() => this.updateProduct(product.id)}
+                    >
+                    Update
+                    </button>
+                    <button 
+                        className="btn btn-danger btn-sm"
+                        onClick={() => this.deleteProduct(product.id)}
+                    >
+                        Delete
+                    </button>
+                </td>
                         </tr>
                     )
                 }

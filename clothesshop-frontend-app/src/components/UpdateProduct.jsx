@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import ProductService from '../services/ProductService';
 
-class AddProduct extends Component {
+class UpdateProduct extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
+            id:this.props.match.params.id,
             name: '',
             price: '',
             category: '',
@@ -16,7 +17,7 @@ class AddProduct extends Component {
         this.changePriceHandler = this.changePriceHandler.bind(this)
         this.changeCategoryHandler = this.changeCategoryHandler.bind(this)
         this.changeQuantityHandler = this.changeQuantityHandler.bind(this)
-        this.save = this.save.bind(this)
+        this.update = this.update.bind(this)
     }
 
     changeNameHandler(event) {
@@ -32,7 +33,20 @@ class AddProduct extends Component {
         this.setState({ quantity: event.target.value })
     }
 
-    save = (e) => {
+    componentDidMount() {
+    ProductService.getProduct(this.state.id).then((res) => {
+        let product = res.data;
+        this.setState({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            quantity: product.inventory,  
+            category: product.category
+        });
+    });
+}
+
+    update = (e) => {
         e.preventDefault()
         let product = {
             name: this.state.name,
@@ -42,7 +56,10 @@ class AddProduct extends Component {
         }
 
         console.log(product)
-        ProductService.insertProduct(product);
+        ProductService.updateProduct(this.state.id,product).then(res=>
+            {
+                this.props.history.push('/');
+            });
     }
 
     cancel(){
@@ -52,7 +69,7 @@ class AddProduct extends Component {
     render() {
         return (
             <div className='container'>
-                <h1>Add Product</h1>
+                <h1>Update Product</h1>
 
                 <div className='row'>
                     <div className='text-center'>
@@ -85,7 +102,7 @@ class AddProduct extends Component {
 
                                     </div>
 
-                                    <button type="button" className="btn btn-success me-2" onClick={this.save}>Add</button>
+                                    <button type="button" className="btn btn-success me-2" onClick={this.update}>Update</button>
                                     <button type="button" className="btn btn-danger" onClick={this.cancel}>Go back</button>
 
                                 </form>
@@ -100,4 +117,4 @@ class AddProduct extends Component {
     }
 }
 
-export default AddProduct
+export default UpdateProduct
