@@ -18,7 +18,7 @@ public class ClothesshopApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/api/products/*").allowedOrigins("http://localhost:3000");
+				registry.addMapping("/*").allowedOrigins("http://localhost:3000");
 			}
 		};
 	}

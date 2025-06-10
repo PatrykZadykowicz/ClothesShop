@@ -6,9 +6,6 @@ import org.springframework.stereotype.Repository;
 import wi.pb.clothesshop.dao.CartDao;
 import wi.pb.clothesshop.entity.Cart;
 import org.springframework.beans.factory.annotation.Autowired;
-import wi.pb.clothesshop.entity.Order;
-
-import java.util.Optional;
 
 @Repository
 public class CartDaoImpl implements CartDao {
