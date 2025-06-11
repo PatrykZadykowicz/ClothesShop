@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface OrderService {
 
-    Order placeOrder(Long userId);
+    Order placeOrder(int userId);
     Order getOrder(Long orderId);
 
-    List<Order> getUserOrders(Long userId);
+    List<Order> getUserOrders(int userId);
 
     OrderDto mapToDto(Order order);
 

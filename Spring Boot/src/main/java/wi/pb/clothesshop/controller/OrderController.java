@@ -26,9 +26,7 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public OrderDto createOrder(@RequestParam Long userId) {
-        Order placedOrder;
-
+    public Order createOrder(@RequestParam int userId) {
         try {
             placedOrder = orderService.placeOrder(userId);
         }  //TODO: better exception handling
@@ -54,7 +52,7 @@ public class OrderController {
     }
 
     @GetMapping("/{userId}/user-orders")
-    public List<OrderDto> getUserOrders(@PathVariable Long userId) {
+    public List<Order> getUserOrders(@PathVariable int userId) {
         try {
             List<Order> orders = orderService.getUserOrders(userId);
 

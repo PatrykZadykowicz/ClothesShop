@@ -22,5 +22,4 @@ public class Product {
     private Double price;
     private String category;
     private int inventory;
-
 }

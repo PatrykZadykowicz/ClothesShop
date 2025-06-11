@@ -35,14 +35,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(int id, Product product) {
-        Product modifiedProduct = productDao.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        Product DBproduct = productDao.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
 
-        modifiedProduct.setName(product.getName());
-        modifiedProduct.setPrice(product.getPrice());
-        modifiedProduct.setCategory(product.getCategory());
-        modifiedProduct.setInventory(product.getInventory());
+        DBproduct.setName(product.getName());
+        DBproduct.setPrice(product.getPrice());
+        DBproduct.setCategory(product.getCategory());
+        DBproduct.setInventory(product.getInventory());
 
-        return productDao.update(modifiedProduct);
+        return productDao.update(DBproduct);
     }
 
     @Override
