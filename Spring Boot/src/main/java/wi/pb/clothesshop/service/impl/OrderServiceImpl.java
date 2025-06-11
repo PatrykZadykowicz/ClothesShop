@@ -12,8 +12,10 @@ import wi.pb.clothesshop.entity.OrderItem;
 import wi.pb.clothesshop.entity.Product;
 import wi.pb.clothesshop.enums.OrderStatus;
 import wi.pb.clothesshop.service.CartService;
+import wi.pb.clothesshop.service.MailService;
 import wi.pb.clothesshop.service.OrderService;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -25,12 +27,14 @@ public class OrderServiceImpl implements OrderService {
     private OrderDao orderDao;
     private ProductDao productDao;
     private CartService cartService;
+    private MailService mailService;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, ProductDao productDao, CartService cartService) {
+    public OrderServiceImpl(OrderDao orderDao, ProductDao productDao, CartService cartService, MailService mailService) {
         this.orderDao = orderDao;
         this.productDao = productDao;
         this.cartService = cartService;
+        this.mailService = mailService;
     }
 
     @Override
@@ -113,5 +117,19 @@ public class OrderServiceImpl implements OrderService {
                 itemDtos,
                 order.getUser().getId()
         );
+    }
+
+    @Override
+    public void sendConfirmationEmail(Order placedOrder) {
+        String userEmail = placedOrder.getUser().getEmail();
+        try {
+            mailService.sendEmail("hi@demomailtrap.co",
+                    userEmail,
+                    "Your order has been placed!",
+                    "Thank you for choosing ClothesShop! Your order has been placed.");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

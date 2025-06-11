@@ -6,8 +6,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import wi.pb.clothesshop.dto.OrderDto;
 import wi.pb.clothesshop.entity.Order;
+import wi.pb.clothesshop.service.MailService;
 import wi.pb.clothesshop.service.OrderService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +27,19 @@ public class OrderController {
 
     @PostMapping("/create")
     public OrderDto createOrder(@RequestParam Long userId) {
+        Order placedOrder;
+
         try {
-            Order placedOrder = orderService.placeOrder(userId);
-            return orderService.mapToDto(placedOrder);
+            placedOrder = orderService.placeOrder(userId);
         }  //TODO: better exception handling
-        catch (Exception e) { e.printStackTrace(); return null; }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        orderService.sendConfirmationEmail(placedOrder);
+
+        return orderService.mapToDto(placedOrder);
     }
 
     @GetMapping("/{orderId}")

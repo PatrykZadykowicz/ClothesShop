@@ -13,4 +13,6 @@ public interface OrderService {
     List<Order> getUserOrders(Long userId);
 
     OrderDto mapToDto(Order order);
+
+    void sendConfirmationEmail(Order placedOrder);
 }
