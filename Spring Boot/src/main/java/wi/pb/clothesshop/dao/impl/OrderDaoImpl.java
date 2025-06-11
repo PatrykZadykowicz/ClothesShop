@@ -52,7 +52,7 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public List<Order> findByUserId(Long userId) {
+    public List<Order> findByUserId(int userId) {
         TypedQuery<Order> query = entityManager.createQuery("select o from Order o where user.id = :userid", Order.class);
         query.setParameter("userid", userId);
         return query.getResultList();

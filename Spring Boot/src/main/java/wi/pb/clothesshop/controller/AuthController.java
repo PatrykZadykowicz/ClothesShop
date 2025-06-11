@@ -13,6 +13,8 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.web.bind.annotation.*;
 import wi.pb.clothesshop.dto.LoginRequest;
 import wi.pb.clothesshop.dto.RegisterRequest;
+import wi.pb.clothesshop.service.CartService;
+import wi.pb.clothesshop.service.UserContextService;
 import wi.pb.clothesshop.service.UserService;
 
 @RestController
@@ -21,10 +23,14 @@ public class AuthController {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final CartService cartService;
+    private final UserContextService userContextService;
 
-    public AuthController(UserService userService, AuthenticationManager authenticationManager) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager, CartService cartService, UserContextService userContextService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.cartService = cartService;
+        this.userContextService = userContextService;
     }
 
     @PostMapping("/register")
@@ -48,6 +54,13 @@ public class AuthController {
                 context
         );
 
+        int userId = userContextService.getUserId();
+
+        if (userId == 0)
+            return ResponseEntity.badRequest().body("Invalid email or password");
+
+        cartService.createCartIfNotExists(userId);
+
         return ResponseEntity.ok("Login successful");
     }
 
@@ -66,7 +79,6 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication auth) {
-        System.out.println("📡 /me - auth: " + auth);
         if (auth == null) {
             return ResponseEntity.status(401).body("Nie jesteś zalogowany");
         }

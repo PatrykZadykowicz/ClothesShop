@@ -5,5 +5,7 @@ import wi.pb.clothesshop.entity.Cart;
 import java.util.Optional;
 
 public interface CartDao {
-    Cart findByUserId(Long userId);
+    Cart findByUserId(int userId);
+    Cart save(Cart cart);
+    void delete(Cart cart);
 }

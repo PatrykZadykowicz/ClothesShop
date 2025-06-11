@@ -12,6 +12,7 @@ import wi.pb.clothesshop.entity.User;
 import wi.pb.clothesshop.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,11 @@ public class UserServiceImpl implements UserService {
     }
 
     public void register(RegisterRequest request) {
+        Optional<User> userExists = userDao.findByEmail(request.getEmail());
+        if (userExists.isPresent()) {
+            throw new RuntimeException("User already exists");
+        }
+
         User user = new User();
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
