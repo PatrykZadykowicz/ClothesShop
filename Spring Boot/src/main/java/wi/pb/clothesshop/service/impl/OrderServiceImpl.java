@@ -4,14 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wi.pb.clothesshop.dao.OrderDao;
 import wi.pb.clothesshop.dao.ProductDao;
+import wi.pb.clothesshop.dto.OrderDto;
+import wi.pb.clothesshop.dto.OrderItemDto;
 import wi.pb.clothesshop.entity.Cart;
 import wi.pb.clothesshop.entity.Order;
 import wi.pb.clothesshop.entity.OrderItem;
 import wi.pb.clothesshop.entity.Product;
 import wi.pb.clothesshop.enums.OrderStatus;
 import wi.pb.clothesshop.service.CartService;
+import wi.pb.clothesshop.service.MailService;
 import wi.pb.clothesshop.service.OrderService;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -23,12 +27,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDao orderDao;
     private final ProductDao productDao;
     private final CartService cartService;
+    private final MailService mailService;
 
     @Autowired
-    public OrderServiceImpl(OrderDao orderDao, ProductDao productDao, CartService cartService) {
+    public OrderServiceImpl(OrderDao orderDao, ProductDao productDao, CartService cartService, MailService mailService) {
         this.orderDao = orderDao;
         this.productDao = productDao;
         this.cartService = cartService;
+        this.mailService = mailService;
     }
 
     @Override
@@ -90,5 +96,40 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getUserOrders(int userId) {
         return orderDao.findByUserId(userId);
+    }
+
+    @Override
+    public OrderDto mapToDto(Order order) {
+        List<OrderItemDto> itemDtos = order.getOrderItems().stream().map(item -> {
+            return new OrderItemDto(
+                    (long) item.getProduct().getId(),
+                    item.getProduct().getName(),
+                    item.getQuantity(),
+                    item.getPrice()
+            );
+        }).toList();
+
+        return new OrderDto(
+                order.getOrderId(),
+                order.getOrderDate(),
+                order.getTotalAmount(),
+                order.getOrderStatus(),
+                itemDtos,
+                (long) order.getUser().getId()
+        );
+    }
+
+    @Override
+    public void sendConfirmationEmail(Order placedOrder) {
+        String userEmail = placedOrder.getUser().getEmail();
+        try {
+            mailService.sendEmail("hi@demomailtrap.co",
+                    userEmail,
+                    "Your order has been placed!",
+                    "Thank you for choosing ClothesShop! Your order has been placed.");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
