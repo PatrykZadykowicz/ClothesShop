@@ -115,7 +115,7 @@ public class OrderServiceImpl implements OrderService {
                 order.getTotalAmount(),
                 order.getOrderStatus(),
                 itemDtos,
-                order.getUser().getId()
+                (long) order.getUser().getId()
         );
     }
 
