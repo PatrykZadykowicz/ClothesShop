@@ -12,5 +12,5 @@ public interface OrderDao {
     Order save(Order order);
     Order update(Order order);
     void delete(Order order);
-    List<Order> findByUserId(Long userId);
+    List<Order> findByUserId(int userId);
 }
