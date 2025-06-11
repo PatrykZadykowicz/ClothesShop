@@ -28,10 +28,27 @@ public class DataInitializer implements CommandLineRunner {
             return roleDao.save(userRole);
         });
 
+        // ROLE_MANAGER
+        Role managerRole = roleDao.findByName("ROLE_MANAGER").orElseGet(() -> {
+            Role role = new Role("ROLE_MANAGER");
+            return roleDao.save(role);
+        });
+
+
         // ROLE_ADMIN
         Role adminRole = roleDao.findByName("ROLE_ADMIN").orElseGet(() -> {
             Role role = new Role("ROLE_ADMIN");
             return roleDao.save(role);
+        });
+
+        userDao.findByEmail("manager@shop.com").orElseGet(() -> {
+            User manager = new User();
+            manager.setFirstName("Magda");
+            manager.setLastName("Menadżer");
+            manager.setEmail("manager@shop.com");
+            manager.setPassword(passwordEncoder.encode("manager123"));
+            manager.getRoles().add(managerRole);
+            return userDao.save(manager);
         });
 
         // Admin user
