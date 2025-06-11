@@ -24,10 +24,10 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private OrderDao orderDao;
-    private ProductDao productDao;
-    private CartService cartService;
-    private MailService mailService;
+    private final OrderDao orderDao;
+    private final ProductDao productDao;
+    private final CartService cartService;
+    private final MailService mailService;
 
     @Autowired
     public OrderServiceImpl(OrderDao orderDao, ProductDao productDao, CartService cartService, MailService mailService) {
@@ -38,8 +38,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order placeOrder(Long userId) {
-        Cart cart = cartService.getCartByUserId(userId);
+    public Order placeOrder(int userId) {
+        Cart cart = cartService.getCart(userId);
         Order order = createOrder(cart);
 
         // Creates a list of order items based on items in the cart
@@ -94,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> getUserOrders(Long userId) {
+    public List<Order> getUserOrders(int userId) {
         return orderDao.findByUserId(userId);
     }
 
