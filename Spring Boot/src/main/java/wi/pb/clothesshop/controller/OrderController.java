@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import wi.pb.clothesshop.dto.OrderDto;
 import wi.pb.clothesshop.entity.Order;
 import wi.pb.clothesshop.service.OrderService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -22,27 +24,35 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public Order createOrder(@RequestParam Long userId) {
+    public OrderDto createOrder(@RequestParam Long userId) {
         try {
-            return orderService.placeOrder(userId);
+            Order placedOrder = orderService.placeOrder(userId);
+            return orderService.mapToDto(placedOrder);
         }  //TODO: better exception handling
         catch (Exception e) { e.printStackTrace(); return null; }
     }
 
     @GetMapping("/{orderId}")
-    public Order getOrderById(@PathVariable Long orderId) {
-        Order order = null;
+    public OrderDto getOrderById(@PathVariable Long orderId) {
 
-        try { order = orderService.getOrder(orderId); }
-        catch (Exception e) { e.printStackTrace(); }
+        try {
+            Order order = orderService.getOrder(orderId);
+            return orderService.mapToDto(order);
+        }
+        catch (Exception e) { e.printStackTrace(); return null; }
 
-        return order;
     }
 
     @GetMapping("/{userId}/user-orders")
-    public List<Order> getUserOrders(@PathVariable Long userId) {
+    public List<OrderDto> getUserOrders(@PathVariable Long userId) {
         try {
-            return orderService.getUserOrders(userId);
+            List<Order> orders = orderService.getUserOrders(userId);
+
+            List<OrderDto> orderDtos = new ArrayList<>();
+            for (Order order : orders) {
+                orderDtos.add(orderService.mapToDto(order));
+            }
+            return orderDtos;
         }
         catch (Exception e) { e.printStackTrace(); return null; }
     }
