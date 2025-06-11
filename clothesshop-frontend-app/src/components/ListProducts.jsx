@@ -1,91 +1,116 @@
-import React, { Component } from 'react'
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { Component } from 'react';
+import AuthService from '../services/AuthService';
 import ProductService from '../services/ProductService';
+import * as CartService from '../services/CartService';
+
 
 class ListProducts extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      products: [],
+      isLoggedIn: false,
+      quantities: {}, // tutaj będziemy trzymać ilości dla każdego produktu
+      error: null,
+    };
+  }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            products : []
-        }
+  componentDidMount() {
+    ProductService.getProducts().then(response => {
+      this.setState({ products: response.data });
+    });
 
-        this.addProduct=this.addProduct.bind(this);
+    AuthService.me()
+      .then(() => this.setState({ isLoggedIn: true }))
+      .catch(() => this.setState({ isLoggedIn: false }));
+  }
+
+  handleQuantityChange(productId, event) {
+    const value = event.target.value;
+    // Możemy dopuścić tylko liczby całkowite i większe od 0
+    if (value === '' || /^[1-9]\d*$/.test(value)) {
+      this.setState(prevState => ({
+        quantities: {
+          ...prevState.quantities,
+          [productId]: value,
+        },
+      }));
     }
+  }
 
-    componentDidMount() {
-        ProductService.getProducts().then(response => {
-            console.log(response.data);
-            this.setState({products: response.data});
-        });
-    }
-    addProduct(){
+  addToCart(productId) {
+    const quantity = parseInt(this.state.quantities[productId]) || 1; // domyślnie 1
+    CartService.addToCart(productId, quantity)
+      .then(() => {
+        alert(`Dodano ${quantity} szt. produktu do koszyka!`);
+        this.setState(prevState => ({
+          quantities: {
+            ...prevState.quantities,
+            [productId]: '', // czyścimy pole po dodaniu
+          },
+        }));
+      })
+      .catch(() => {
+        alert('Nie udało się dodać produktu do koszyka.');
+      });
+  }
 
-        this.props.history.push('/addProduct');
-    }
+  render() {
+    const { products, isLoggedIn, quantities } = this.state;
 
-    updateProduct(id){
-    this.props.history.push(`/updateProduct/${id}`);
+    return (
+      <div>
+        <h1>List of products</h1>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Product Id</th>
+              <th>Category</th>
+              <th>Name</th>
+              <th>Price</th>
+              {isLoggedIn && (
+                <>
+                  <th>Ilość</th>
+                  <th>Akcje</th>
+                </>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {products.map(product => (
+              <tr key={product.id}>
+                <td>{product.id}</td>
+                <td>{product.category}</td>
+                <td>{product.name}</td>
+                <td>{product.price}</td>
+                {isLoggedIn && (
+                  <>
+                    <td>
+                      <input
+                        type="number"
+                        min="1"
+                        value={quantities[product.id] || ''}
+                        onChange={e => this.handleQuantityChange(product.id, e)}
+                        style={{ width: '60px' }}
+                      />
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-success btn-sm"
+                        onClick={() => this.addToCart(product.id)}
+                      >
+                        Add to Cart
+                      </button>
+                    </td>
+                  </>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
 }
 
-
-    deleteProduct(id) {
-    const confirmDelete = window.confirm("Are you sure you want to delete this product?");
-    if (confirmDelete) {
-        ProductService.deleteProduct(id).then(res => {
-            this.setState({ products: this.state.products.filter(product => product.id !== id) });
-        }).catch(error => {
-            console.error("Delete failed:", error);
-        });
-    }
-}
-
-
-    render() {
-        return (
-        <div>
-            <h1>List of products</h1>
-            <button className='btn btn-dark text-white' onClick={this.addProduct}>Add Product</button>
-            <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Product Id</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                {
-                    this.state.products.map(product => 
-                        <tr key={product.id}>
-                        <td>{product.id}</td>
-                        <td>{product.category}</td>
-                        <td>{product.name}</td>
-                        <td>{product.price}</td>
-                        
-                         <td>
-                            <button
-                    className="btn btn-primary btn-sm me-2"
-                    onClick={() => this.updateProduct(product.id)}
-                    >
-                    Update
-                    </button>
-                    <button 
-                        className="btn btn-danger btn-sm"
-                        onClick={() => this.deleteProduct(product.id)}
-                    >
-                        Delete
-                    </button>
-                </td>
-                        </tr>
-                    )
-                }
-            </tbody>
-            </table>
-        </div>
-        )
-    }
-}
-
-export default ListProducts
+export default ListProducts;
