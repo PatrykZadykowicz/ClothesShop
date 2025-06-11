@@ -3,6 +3,7 @@ package wi.pb.clothesshop.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import wi.pb.clothesshop.entity.Product;
 import wi.pb.clothesshop.service.ProductService;
@@ -22,12 +23,14 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('MANAGER')")
     @GetMapping("/all")
     public List<Product> getAllProducts()
     {
         return productService.getAllProducts();
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/insert")
     public Product insertProduct(@RequestBody Product product)
     {
@@ -37,6 +40,7 @@ public class ProductController {
         catch (Exception e) { e.printStackTrace(); return null;}
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('MANAGER')")
     @GetMapping("/find/{id}")
     public Product getProduct(@PathVariable int id) {
         try {
@@ -45,6 +49,7 @@ public class ProductController {
         catch (Exception e) { e.printStackTrace(); return null;}
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/update/{id}")
     public Product updateProduct(@PathVariable int id, @RequestBody Product product) {
         try {
@@ -53,6 +58,7 @@ public class ProductController {
         catch (Exception e) { e.printStackTrace(); return null; }
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/delete/{id}")
     public void deleteProduct(@PathVariable int id) {
         try {

@@ -82,9 +82,11 @@ public class CartServiceImpl implements CartService {
         CartItem cartItem = cartItemDao.findByCartIdAndProductId(cart.getId(), productId);
         if (cartItem != null) {
             cartItemDao.delete(cartItem);
-        }
 
-        updateTotalAmount(cart);
+            updateTotalAmount(cart);
+        } else {
+            throw new RuntimeException("Product not found in the cart for productId: " + productId);
+        }
     }
 
     private void updateTotalAmount(Cart cart) {
@@ -92,7 +94,6 @@ public class CartServiceImpl implements CartService {
                 .map(CartItem::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         cart.setTotalAmount(totalAmount);
-        cartDao.save(cart);
     }
 
     public Cart getCart(int userId) {
@@ -128,7 +129,5 @@ public class CartServiceImpl implements CartService {
         }
 
         cart.setTotalAmount(BigDecimal.ZERO);
-
-        cartDao.save(cart);
     }
 }

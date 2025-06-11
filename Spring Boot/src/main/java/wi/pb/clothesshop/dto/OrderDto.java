@@ -22,6 +22,6 @@ public class OrderDto {
     private OrderStatus orderStatus;
     private List<OrderItemDto> orderItems;
 
-    private Long userId;
+    private int userId;
 
 }

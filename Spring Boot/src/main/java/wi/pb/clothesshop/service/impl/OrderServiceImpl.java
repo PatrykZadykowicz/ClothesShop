@@ -2,6 +2,7 @@ package wi.pb.clothesshop.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wi.pb.clothesshop.dao.OrderDao;
 import wi.pb.clothesshop.dao.ProductDao;
 import wi.pb.clothesshop.dto.OrderDto;
@@ -18,8 +19,10 @@ import wi.pb.clothesshop.service.OrderService;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -50,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(calculateTotalAmount(orderItemList));
 
         orderDao.save(order);
-        cartService.clearCart(cart.getId());
+        cartService.clearCart(userId);
         return order;
     }
 
@@ -99,10 +102,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<Order> getAllOrders() {
+        List<Order> allOrders = orderDao.getAll();
+
+        return allOrders;
+    }
+
+    @Override
     public OrderDto mapToDto(Order order) {
         List<OrderItemDto> itemDtos = order.getOrderItems().stream().map(item -> {
             return new OrderItemDto(
-                    (long) item.getProduct().getId(),
+                    item.getProduct().getId(),
                     item.getProduct().getName(),
                     item.getQuantity(),
                     item.getPrice()
@@ -115,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
                 order.getTotalAmount(),
                 order.getOrderStatus(),
                 itemDtos,
-                (long) order.getUser().getId()
+                order.getUser().getId()
         );
     }
 
@@ -131,5 +141,19 @@ public class OrderServiceImpl implements OrderService {
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Transactional
+    public void changeOrderStatus(Long orderId, OrderStatus newStatus) {
+        Order order = orderDao.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (order.getOrderStatus() == newStatus) {
+            throw new RuntimeException("Order is already in this status");
+        }
+
+        order.setOrderStatus(newStatus);
+
+        orderDao.save(order);
     }
 }
