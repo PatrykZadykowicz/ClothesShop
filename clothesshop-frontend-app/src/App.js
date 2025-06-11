@@ -6,26 +6,29 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import AddProduct from './components/AddProduct'; 
 import Product from './components/Product';
-import UpdateProduct from './components/UpdateProduct'
+import UpdateProduct from './components/UpdateProduct';
+import RegisterPage from './components/RegisterPage';  
+import Cart from './components/Cart'
+
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <div>
+    <Router>
       <Header />
-      <Router>
-        <div className="container mt-5">
-          <Switch>
-            <Route exact path="/" component={ListProducts} />
-            <Route exact path="/productsList" component={ListProducts} />
-            <Route exact path="/addProduct" component={AddProduct} />
-            <Route exact path="/viewProduct/:id" component={Product} />
-            <Route exact path="/updateProduct/:id" component={UpdateProduct} />
-          </Switch>
-        </div>
-        <Footer />
-      </Router>
-    </div>
+      <div className="container mt-5">
+        <Switch>
+          <Route exact path="/" component={ListProducts} />
+          <Route exact path="/productsList" component={ListProducts} />
+          <Route exact path="/addProduct" component={AddProduct} />
+          <Route exact path="/viewProduct/:id" component={Product} />
+          <Route exact path="/updateProduct/:id" component={UpdateProduct} />
+          <Route exact path="/register" component={RegisterPage} />   
+          <Route exact path="/cart" component={Cart} />
+        </Switch>
+      </div>
+      <Footer />
+    </Router>
   );
 }
 

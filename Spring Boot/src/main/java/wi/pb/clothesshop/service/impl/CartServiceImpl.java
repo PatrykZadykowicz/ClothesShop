@@ -81,11 +81,15 @@ public class CartServiceImpl implements CartService {
 
         CartItem cartItem = cartItemDao.findByCartIdAndProductId(cart.getId(), productId);
         if (cartItem != null) {
+            System.out.println("Removing cartItem: " + cartItem.getId());
             cartItemDao.delete(cartItem);
+        } else {
+            System.out.println("No CartItem found for productId: " + productId);
         }
 
         updateTotalAmount(cart);
     }
+
 
     private void updateTotalAmount(Cart cart) {
         BigDecimal totalAmount = cart.getCartItems().stream()
