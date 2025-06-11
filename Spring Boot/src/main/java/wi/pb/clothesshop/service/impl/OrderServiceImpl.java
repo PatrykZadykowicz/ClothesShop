@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wi.pb.clothesshop.dao.OrderDao;
 import wi.pb.clothesshop.dao.ProductDao;
+import wi.pb.clothesshop.dto.OrderDto;
+import wi.pb.clothesshop.dto.OrderItemDto;
 import wi.pb.clothesshop.entity.Cart;
 import wi.pb.clothesshop.entity.Order;
 import wi.pb.clothesshop.entity.OrderItem;
@@ -90,5 +92,26 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getUserOrders(Long userId) {
         return orderDao.findByUserId(userId);
+    }
+
+    @Override
+    public OrderDto mapToDto(Order order) {
+        List<OrderItemDto> itemDtos = order.getOrderItems().stream().map(item -> {
+            return new OrderItemDto(
+                    (long) item.getProduct().getId(),
+                    item.getProduct().getName(),
+                    item.getQuantity(),
+                    item.getPrice()
+            );
+        }).toList();
+
+        return new OrderDto(
+                order.getOrderId(),
+                order.getOrderDate(),
+                order.getTotalAmount(),
+                order.getOrderStatus(),
+                itemDtos,
+                order.getUser().getId()
+        );
     }
 }
