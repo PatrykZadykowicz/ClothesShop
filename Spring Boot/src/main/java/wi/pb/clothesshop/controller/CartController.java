@@ -19,7 +19,7 @@ public class CartController {
         this.userContextService = userContextService;
     }
 
-    //@PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/add")
     public ResponseEntity<?> addProductToCart(@RequestParam int productId, @RequestParam int quantity) {
         int userId = userContextService.getUserId();
@@ -31,7 +31,7 @@ public class CartController {
         return ResponseEntity.ok("Product added to cart");
     }
 
-    //@PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/remove")
     public ResponseEntity<?> removeProductFromCart(@RequestParam int productId) {
         int userId = userContextService.getUserId();
@@ -43,7 +43,7 @@ public class CartController {
         return ResponseEntity.ok("Product removed from cart");
     }
 
-    //@PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/view")
     public ResponseEntity<Cart> getCart() {
         int userId = userContextService.getUserId();
@@ -55,7 +55,7 @@ public class CartController {
         return ResponseEntity.ok(cart);
     }
 
-    //@PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/clear")
     public ResponseEntity<?> clearCart() {
         int userId = userContextService.getUserId();
@@ -63,6 +63,7 @@ public class CartController {
         if (userId == 0) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
+
 
         cartService.clearCart(userId);
         return ResponseEntity.ok("Cart cleared successfully");

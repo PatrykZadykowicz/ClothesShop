@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,7 +37,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        userService.register(request);
+        try {
+            userService.register(request);
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok("User registered");
     }
 
@@ -78,6 +84,7 @@ public class AuthController {
         return ResponseEntity.ok("Logged out");
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication auth) {
         if (auth == null || !auth.isAuthenticated()) {
