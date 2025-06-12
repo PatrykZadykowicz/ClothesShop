@@ -3,6 +3,7 @@ package wi.pb.clothesshop.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import wi.pb.clothesshop.entity.Product;
@@ -32,39 +33,43 @@ public class ProductController {
 
     @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/insert")
-    public Product insertProduct(@RequestBody Product product)
+    public ResponseEntity<Product> insertProduct(@RequestBody Product product)
     {
         try {
-            return productService.insertProduct(product);
+            Product newProduct = productService.insertProduct(product);
+            return ResponseEntity.ok(product);
         }
-        catch (Exception e) { e.printStackTrace(); return null;}
+        catch (Exception e) { return ResponseEntity.noContent().build(); }
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('MANAGER')")
     @GetMapping("/find/{id}")
-    public Product getProduct(@PathVariable int id) {
+    public ResponseEntity<Product> getProduct(@PathVariable int id) {
         try {
-            return productService.getProduct(id);
+            Product product = productService.getProduct(id);
+            return ResponseEntity.ok(product);
         }
-        catch (Exception e) { e.printStackTrace(); return null;}
+        catch (Exception e) { return ResponseEntity.noContent().build(); }
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/update/{id}")
-    public Product updateProduct(@PathVariable int id, @RequestBody Product product) {
+    public ResponseEntity<Product> updateProduct(@PathVariable int id, @RequestBody Product product) {
         try {
-            return productService.updateProduct(id, product);
+            Product updatedProduct = productService.updateProduct(id, product);
+            return ResponseEntity.ok(product);
         }
-        catch (Exception e) { e.printStackTrace(); return null; }
+        catch (Exception e) {  return ResponseEntity.noContent().build(); }
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/delete/{id}")
-    public void deleteProduct(@PathVariable int id) {
+    public ResponseEntity<?> deleteProduct(@PathVariable int id) {
         try {
             productService.deleteProduct(id);
+            return ResponseEntity.ok("Product deleted successfully");
         }
-        catch (Exception e) { e.printStackTrace(); }
+        catch (Exception e) { return ResponseEntity.status(400).body("Product not found."); }
     }
 
 }
