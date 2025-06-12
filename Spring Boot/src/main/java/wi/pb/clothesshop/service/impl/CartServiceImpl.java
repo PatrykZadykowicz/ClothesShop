@@ -81,6 +81,7 @@ public class CartServiceImpl implements CartService {
 
         CartItem cartItem = cartItemDao.findByCartIdAndProductId(cart.getId(), productId);
         if (cartItem != null) {
+            System.out.println("Removing cartItem: " + cartItem.getId());
             cartItemDao.delete(cartItem);
 
             updateTotalAmount(cart);
@@ -88,6 +89,7 @@ public class CartServiceImpl implements CartService {
             throw new RuntimeException("Product not found in the cart for productId: " + productId);
         }
     }
+
 
     private void updateTotalAmount(Cart cart) {
         BigDecimal totalAmount = cart.getCartItems().stream()

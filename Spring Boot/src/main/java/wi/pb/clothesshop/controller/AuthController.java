@@ -17,6 +17,7 @@ import wi.pb.clothesshop.dto.RegisterRequest;
 import wi.pb.clothesshop.service.CartService;
 import wi.pb.clothesshop.service.UserContextService;
 import wi.pb.clothesshop.service.UserService;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -86,9 +87,16 @@ public class AuthController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication auth) {
-        if (auth == null) {
+        if (auth == null || !auth.isAuthenticated()) {
             return ResponseEntity.status(401).body("Nie jesteś zalogowany");
         }
-        return ResponseEntity.ok(auth);
+        String email = auth.getName();
+        int userId = userContextService.getUserId(); // pobierz userId z kontekstu
+
+        return ResponseEntity.ok(Map.of(
+                "email", email,
+                "id", userId
+        ));
     }
+
 }

@@ -1,0 +1,29 @@
+<configuration>
+
+    <appender name="ROTATING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/requests.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>logs/requests.%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>2</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="requestLogger" level="INFO" additivity="false">
+        <appender-ref ref="ROTATING_FILE"/>
+    </logger>
+
+    <root level="INFO">
+
+    </root>
+
+</configuration>

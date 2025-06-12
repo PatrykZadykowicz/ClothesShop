@@ -59,10 +59,14 @@ public class CartController {
     @DeleteMapping("/clear")
     public ResponseEntity<?> clearCart() {
         int userId = userContextService.getUserId();
-        if (userId == 0)
-            return ResponseEntity.noContent().build();
+
+        if (userId == 0) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
 
         cartService.clearCart(userId);
         return ResponseEntity.ok("Cart cleared successfully");
     }
+
 }
