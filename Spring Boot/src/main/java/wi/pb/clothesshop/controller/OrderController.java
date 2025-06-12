@@ -29,6 +29,12 @@ public class OrderController {
     private OrderService orderService;
     private UserContextService userContextService;
 
+    @Autowired
+    public OrderController(OrderService orderService, UserContextService userContextService) {
+        this.orderService = orderService;
+        this.userContextService = userContextService;
+    }
+
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/create")
     public OrderDto createOrder() {

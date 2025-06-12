@@ -84,7 +84,6 @@ public class AuthController {
         return ResponseEntity.ok("Logged out");
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication auth) {
         if (auth == null || !auth.isAuthenticated()) {

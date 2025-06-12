@@ -24,6 +24,11 @@ class OrderService {
   sendConfirmationEmail(orderId) {
     return axios.post(`${BASE_API}/${orderId}/send-confirmation`, null, { withCredentials: true });
   }
+
+  getLoggedInUserOrders() {
+    return axios.get(`${BASE_API}/my`, { withCredentials: true });
+  }
+
 }
 
 export default new OrderService();

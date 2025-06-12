@@ -27,7 +27,7 @@ class OrderHistory extends Component {
       const userId = userResponse.data.id;
 
       // Pobierz zamówienia użytkownika
-      const response = await OrderService.getOrdersByUser(userId);
+      const response = await OrderService.getLoggedInUserOrders();
 
       this.setState({ orders: response.data, loading: false });
     } catch (error) {
