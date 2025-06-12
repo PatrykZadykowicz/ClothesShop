@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import AuthService from '../services/AuthService';
 import ProductService from '../services/ProductService';
-import * as CartService from '../services/CartService';
-
+import CartService from '../services/CartService';
 
 class ListProducts extends Component {
   constructor(props) {
@@ -10,7 +9,7 @@ class ListProducts extends Component {
     this.state = {
       products: [],
       isLoggedIn: false,
-      quantities: {}, // tutaj będziemy trzymać ilości dla każdego produktu
+      quantities: {}, // quantities per product
       error: null,
     };
   }
@@ -27,7 +26,7 @@ class ListProducts extends Component {
 
   handleQuantityChange(productId, event) {
     const value = event.target.value;
-    // Możemy dopuścić tylko liczby całkowite i większe od 0
+    // Only allow positive integers
     if (value === '' || /^[1-9]\d*$/.test(value)) {
       this.setState(prevState => ({
         quantities: {
@@ -39,19 +38,19 @@ class ListProducts extends Component {
   }
 
   addToCart(productId) {
-    const quantity = parseInt(this.state.quantities[productId]) || 1; // domyślnie 1
+    const quantity = parseInt(this.state.quantities[productId]) || 1; // default to 1
     CartService.addToCart(productId, quantity)
       .then(() => {
-        alert(`Dodano ${quantity} szt. produktu do koszyka!`);
+        alert(`Added ${quantity} item(s) to cart!`);
         this.setState(prevState => ({
           quantities: {
             ...prevState.quantities,
-            [productId]: '', // czyścimy pole po dodaniu
+            [productId]: '', // clear field after adding
           },
         }));
       })
       .catch(() => {
-        alert('Nie udało się dodać produktu do koszyka.');
+        alert('Failed to add product to cart.');
       });
   }
 
@@ -60,18 +59,18 @@ class ListProducts extends Component {
 
     return (
       <div>
-        <h1>List of products</h1>
+        <h1>List of Products</h1>
         <table className="table">
           <thead>
             <tr>
-              <th>Product Id</th>
+              <th>Product ID</th>
               <th>Category</th>
               <th>Name</th>
               <th>Price</th>
               {isLoggedIn && (
                 <>
-                  <th>Ilość</th>
-                  <th>Akcje</th>
+                  <th>Quantity</th>
+                  <th>Actions</th>
                 </>
               )}
             </tr>

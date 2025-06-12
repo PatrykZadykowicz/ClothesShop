@@ -9,6 +9,9 @@ import Product from './components/Product';
 import UpdateProduct from './components/UpdateProduct';
 import RegisterPage from './components/RegisterPage';  
 import Cart from './components/Cart'
+import OrderHistory from './components/OrderHistory';
+
+
 
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
@@ -25,6 +28,7 @@ function App() {
           <Route exact path="/updateProduct/:id" component={UpdateProduct} />
           <Route exact path="/register" component={RegisterPage} />   
           <Route exact path="/cart" component={Cart} />
+          <Route exact path="/orders" component={OrderHistory} />
         </Switch>
       </div>
       <Footer />

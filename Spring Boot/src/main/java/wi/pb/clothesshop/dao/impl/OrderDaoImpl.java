@@ -53,8 +53,14 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public List<Order> findByUserId(int userId) {
-        TypedQuery<Order> query = entityManager.createQuery("select o from Order o where user.id = :userid", Order.class);
+        TypedQuery<Order> query = entityManager.createQuery(
+                "select distinct o from Order o " +
+                        "left join fetch o.orderItems oi " +
+                        "left join fetch oi.product " +
+                        "where o.user.id = :userid",
+                Order.class);
         query.setParameter("userid", userId);
         return query.getResultList();
     }
+
 }
