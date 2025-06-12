@@ -32,7 +32,7 @@ class Header extends Component {
       const userResponse = await AuthService.me();
       this.setState({ loggedInUser: userResponse.data, message: '' });
     } catch {
-      this.setState({ message: 'Błąd logowania. Sprawdź dane.' });
+      this.setState({ message: 'Login failed. Please check your credentials.' });
     }
   }
 
@@ -58,12 +58,13 @@ class Header extends Component {
 
               <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="/" className="nav-link px-2 text-secondary">Product List</a></li>
+                <Link to="/orders" className="nav-link px-2 text-secondary">Order History</Link>
               </ul>
 
               <div className="text-end d-flex align-items-center gap-2">
                 {loggedInUser ? (
                   <>
-                    <span className="me-3">Witaj, {loggedInUser.email}</span>
+                    <span className="me-3">Welcome, {loggedInUser.email}</span>
                     <button className="btn btn-outline-light me-2" onClick={this.handleLogout}>Logout</button>
                     <Link to="/cart" className="btn btn-primary">Cart</Link>
                   </>
@@ -83,7 +84,7 @@ class Header extends Component {
                       <input
                         name="password"
                         type="password"
-                        placeholder="Hasło"
+                        placeholder="Password"
                         value={password}
                         onChange={this.handleChange}
                         className="form-control"
@@ -92,7 +93,7 @@ class Header extends Component {
                       />
                       <button type="submit" className="btn btn-outline-light">Login</button>
                     </form>
-                    <Link to="/register" className="btn btn-warning ms-2">Sign-up</Link>
+                    <Link to="/register" className="btn btn-warning ms-2">Sign up</Link>
                   </>
                 )}
               </div>

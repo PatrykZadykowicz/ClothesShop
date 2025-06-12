@@ -1,35 +1,29 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/cart';
+const BASE_API = 'http://localhost:8080/api/cart';
 
-export const getCart = () => {
-  return axios.get(`${API_URL}/view`, { withCredentials: true });
-};
+class CartService {
+  getCart() {
+    return axios.get(`${BASE_API}/view`, { withCredentials: true });
+  }
 
-export const addToCart = (productId, quantity) => {
-  return axios.post(`${API_URL}/add`, null, {
-    params: { productId, quantity },
-    withCredentials: true
-  });
-};
+  addToCart(productId, quantity) {
+    return axios.post(`${BASE_API}/add`, null, {
+      params: { productId, quantity },
+      withCredentials: true,
+    });
+  }
 
-export const removeFromCart = (productId) => {
-  return axios.delete(`${API_URL}/remove`, {
-    params: { productId },
-    
-  });
-};
+  removeFromCart(productId) {
+    return axios.delete(`${BASE_API}/remove`, {
+      params: { productId },
+      withCredentials: true,
+    });
+  }
 
-export const clearCart = (userId) => {
-  return axios.delete(`${API_URL}/clear`, {
-    params: { userId },
-    withCredentials: true
-  });
-};
+  clearCart() {
+  return axios.delete(`${BASE_API}/clear`, { withCredentials: true });
+}
+}
 
-export default {
-  getCart,
-  addToCart,
-  removeFromCart,
-  clearCart
-};
+export default new CartService();

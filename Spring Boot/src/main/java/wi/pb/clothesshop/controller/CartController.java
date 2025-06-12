@@ -57,8 +57,15 @@ public class CartController {
 
     //@PreAuthorize("hasRole('USER')")
     @DeleteMapping("/clear")
-    public ResponseEntity<?> clearCart(@RequestParam int userId) {
+    public ResponseEntity<?> clearCart() {
+        int userId = userContextService.getUserId();
+
+        if (userId == 0) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
         cartService.clearCart(userId);
         return ResponseEntity.ok("Cart cleared successfully");
     }
+
 }

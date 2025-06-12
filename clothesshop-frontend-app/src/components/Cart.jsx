@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import { clearCart, removeFromCart, getCart } from '../services/CartService'; // importuj serwis
+import AuthService from '../services/AuthService';
+import OrderService from '../services/OrderService';
+import CartService from '../services/CartService';  // poprawiony import - dodałem '/' po '..'
 
 class Cart extends Component {
   state = {
     cart: null,
     loading: true,
     error: null,
+    ordering: false,
   };
 
   componentDidMount() {
@@ -14,49 +16,74 @@ class Cart extends Component {
   }
 
   loadCart = () => {
-    getCart()
+    CartService.getCart()
       .then(response => {
         this.setState({ cart: response.data, loading: false });
       })
       .catch(() => {
-        this.setState({ error: 'Nie udało się pobrać koszyka.', loading: false });
+        this.setState({ error: 'Failed to load the cart.', loading: false });
       });
   };
 
   handleClearCart = () => {
-    if (window.confirm('Czy na pewno chcesz wyczyścić cały koszyk?')) {
-      clearCart()
+    if (window.confirm('Are you sure you want to clear the entire cart?')) {
+      CartService.clearCart()
         .then(() => {
           this.setState({ cart: { cartItems: [] } });
-          alert('Koszyk został wyczyszczony.');
+          alert('Cart has been cleared.');
         })
         .catch(() => {
-          alert('Nie udało się wyczyścić koszyka.');
+          alert('Failed to clear the cart.');
         });
     }
   };
 
   handleRemoveItem = (productId) => {
-    if (window.confirm('Czy na pewno chcesz usunąć ten produkt z koszyka?')) {
-      removeFromCart(productId)
+    if (window.confirm('Are you sure you want to remove this product from the cart?')) {
+      CartService.removeFromCart(productId)
         .then(() => {
-          // Po usunięciu przeładuj koszyk
           this.loadCart();
         })
         .catch(() => {
-          alert('Nie udało się usunąć produktu z koszyka.');
+          alert('Failed to remove product from the cart.');
         });
     }
   };
 
-  render() {
-    const { cart, loading, error } = this.state;
+  handlePlaceOrder = async () => {
+    this.setState({ ordering: true });
+    try {
+      // Pobierz info o użytkowniku
+      const userResponse = await AuthService.me();
 
-    if (loading) return <p>Ładowanie koszyka...</p>;
+      if (!userResponse.data || !userResponse.data.id) {
+        alert('User not authenticated.');
+        this.setState({ ordering: false });
+        return;
+      }
+
+      const userId = userResponse.data.id;
+
+      await OrderService.placeOrder(userId);
+
+      alert('Order placed successfully!');
+      this.loadCart();
+    } catch (error) {
+      console.error('Error placing order:', error.response || error.message || error);
+      alert('Failed to place order.');
+    } finally {
+      this.setState({ ordering: false });
+    }
+  };
+
+  render() {
+    const { cart, loading, error, ordering } = this.state;
+
+    if (loading) return <p>Loading cart...</p>;
     if (error) return <p>{error}</p>;
 
     if (!cart || !cart.cartItems || cart.cartItems.length === 0) {
-      return <p>Twój koszyk jest pusty.</p>;
+      return <p>Your cart is empty.</p>;
     }
 
     const totalAmount = cart.cartItems.reduce(
@@ -64,20 +91,38 @@ class Cart extends Component {
       0
     );
 
+    const buttonStyle = {
+      marginBottom: '15px',
+      backgroundColor: '#f44336',
+      color: 'white',
+      border: 'none',
+      padding: '8px 12px',
+      cursor: 'pointer',
+      borderRadius: '8px',
+      transition: 'background-color 0.3s ease',
+    };
+
+    const orderButtonStyle = {
+      ...buttonStyle,
+      backgroundColor: ordering ? '#999' : '#4CAF50',
+      cursor: ordering ? 'not-allowed' : 'pointer',
+      marginTop: '20px',
+    };
+
     return (
       <div>
-        <h2>Twój koszyk</h2>
-        <button onClick={this.handleClearCart} style={{ marginBottom: '15px', backgroundColor: '#f44336', color: 'white', border: 'none', padding: '8px 12px', cursor: 'pointer' }}>
-          Wyczyść koszyk
+        <h2>Your Cart</h2>
+        <button onClick={this.handleClearCart} style={buttonStyle}>
+          Clear Cart
         </button>
         <table style={{ borderCollapse: 'collapse', width: '100%' }}>
           <thead>
             <tr>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }}>Nazwa produktu</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }}>Ilość</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }}>Cena za sztukę (PLN)</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }}>Łączna cena (PLN)</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }}>Akcje</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px' }}>Product Name</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px' }}>Quantity</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px' }}>Price per Unit (PLN)</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px' }}>Total Price (PLN)</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -92,18 +137,27 @@ class Cart extends Component {
                 <td style={{ border: '1px solid #ddd', padding: '8px' }}>
                   <button
                     onClick={() => this.handleRemoveItem(item.product.id)}
-                    style={{ backgroundColor: '#f44336', color: 'white', border: 'none', padding: '6px 10px', cursor: 'pointer' }}
+                    style={buttonStyle}
                   >
-                    Usuń
+                    Remove
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+
         <p style={{ marginTop: '20px', fontWeight: 'bold' }}>
-          Łączna wartość: {totalAmount.toFixed(2)} PLN
+          Total Amount: {totalAmount.toFixed(2)} PLN
         </p>
+
+        <button
+          onClick={this.handlePlaceOrder}
+          style={orderButtonStyle}
+          disabled={ordering}
+        >
+          {ordering ? 'Placing order...' : 'Place Order'}
+        </button>
       </div>
     );
   }
