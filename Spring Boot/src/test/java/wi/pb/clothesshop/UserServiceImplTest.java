@@ -12,7 +12,6 @@ import wi.pb.clothesshop.dto.RegisterRequest;
 import wi.pb.clothesshop.entity.User;
 import wi.pb.clothesshop.entity.Role;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import wi.pb.clothesshop.service.UserService;
 import wi.pb.clothesshop.service.impl.UserServiceImpl;
 
 import java.util.Optional;
