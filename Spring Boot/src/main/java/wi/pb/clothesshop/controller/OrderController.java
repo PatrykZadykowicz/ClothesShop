@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import wi.pb.clothesshop.dto.OrderDto;
 import wi.pb.clothesshop.dto.UpdateOrderStatusRequest;
 import wi.pb.clothesshop.entity.Order;
+import wi.pb.clothesshop.entity.Product;
 import wi.pb.clothesshop.enums.OrderStatus;
 import wi.pb.clothesshop.service.MailService;
 import wi.pb.clothesshop.service.OrderService;
@@ -37,37 +38,33 @@ public class OrderController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/create")
-    public OrderDto createOrder() {
+    public ResponseEntity<OrderDto> createOrder() {
         int userId = userContextService.getUserId();
         Order placedOrder;
         try {
             placedOrder = orderService.placeOrder(userId);
-        }  //TODO: better exception handling
-        catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
+        catch (Exception e) { return ResponseEntity.noContent().build(); }
 
         orderService.sendConfirmationEmail(placedOrder);
 
-        return orderService.mapToDto(placedOrder);
+        return ResponseEntity.ok(orderService.mapToDto(placedOrder));
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/{orderId}")
-    public OrderDto getOrderById(@PathVariable Long orderId) {
-
+    public ResponseEntity<OrderDto> getOrderById(@PathVariable Long orderId) {
         try {
             Order order = orderService.getOrder(orderId);
-            return orderService.mapToDto(order);
+            return ResponseEntity.ok(orderService.mapToDto(order));
         }
-        catch (Exception e) { e.printStackTrace(); return null; }
+        catch (Exception e) { return ResponseEntity.noContent().build(); }
 
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/{userId}/user-orders")
-    public List<OrderDto> getUserOrders(@PathVariable int userId) {
+    public ResponseEntity<List<OrderDto>> getUserOrders(@PathVariable int userId) {
         try {
             List<Order> orders = orderService.getUserOrders(userId);
 
@@ -75,14 +72,14 @@ public class OrderController {
             for (Order order : orders) {
                 orderDtos.add(orderService.mapToDto(order));
             }
-            return orderDtos;
+            return ResponseEntity.ok(orderDtos);
         }
-        catch (Exception e) { e.printStackTrace(); return null; }
+        catch (Exception e) { return ResponseEntity.noContent().build(); }
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping()
-    public List<OrderDto> getAllOrders() {
+    public ResponseEntity<List<OrderDto>> getAllOrders() {
         List<Order> orders = orderService.getAllOrders();
 
         List<OrderDto> orderDtos = new ArrayList<>();
@@ -90,10 +87,10 @@ public class OrderController {
             orderDtos.add(orderService.mapToDto(order));
         }
 
-        return orderDtos;
+        return ResponseEntity.ok(orderDtos);
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{orderId}/status")
     public ResponseEntity<?> changeOrderStatus(
             @PathVariable Long orderId,
