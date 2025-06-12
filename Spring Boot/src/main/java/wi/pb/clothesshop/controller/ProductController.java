@@ -24,7 +24,6 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('MANAGER')")
     @GetMapping("/all")
     public ResponseEntity<List<Product>> getAllProducts()
     {

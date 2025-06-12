@@ -34,14 +34,14 @@ public class OrderDaoImpl implements OrderDao {
 
     @Transactional
     @Override
-    public Order save(Order order) { // TODO
+    public Order save(Order order) {
         entityManager.persist(order);
         return order;
     }
 
     @Transactional
     @Override
-    public Order update(Order order) { // TODO
+    public Order update(Order order) {
         return entityManager.merge(order);
     }
 

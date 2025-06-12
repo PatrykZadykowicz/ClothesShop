@@ -15,13 +15,19 @@ class ListProducts extends Component {
   }
 
   componentDidMount() {
-    ProductService.getProducts().then(response => {
-      this.setState({ products: response.data });
-    });
-
     AuthService.me()
-      .then(() => this.setState({ isLoggedIn: true }))
-      .catch(() => this.setState({ isLoggedIn: false }));
+      .then(() => {
+        this.setState({ isLoggedIn: true });
+        return ProductService.getProducts();
+      })
+      .then(response => {
+        console.log(response.data);
+        this.setState({ products: response.data });
+      })
+      .catch(error => {
+        console.error(error);
+        this.setState({ isLoggedIn: false })
+      });
   }
 
   handleQuantityChange(productId, event) {
